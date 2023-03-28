@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout1}">
+
+<div layout:fragment="content">
+	<div style="overflow-y: scroll; height:280px;">
+
+		<!-- Header Table -->
+		<table>
+
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>이름</th>
+					<th>핸드폰 번호</th>
+					<th>주소</th>
+					<th></th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<!-- tr th:each : 행 반복문을 수행하겠다는 의미입니다 [여러 데이터 출력] -->
+				<tr th:each="list : ${tableList}">
+					<td><span th:text="${list.businessNum}"></span></td>
+					<td><span th:text="${list.businessName}"></span></td>
+					<td><span th:text="${list.businessPhoneNumber}"></span></td>
+					<td><span th:text="${list.operationAddress}"></span></td>
+					 <td ><a style="color: #777777" th:href="@{/company/{id}(id=${list.businessNum})}" th:text="정보확인"></a>
+					 	<a style="color: red;" th:href="@{/company/delete/{id}(id=${list.businessNum})}" th:text="삭제"></a></td>
+                           
+				</tr>
+			</tbody>
+
+		</table>
+
+
+	</div>
+
+
+
+	<nav>
+		<div class="nav nav-tabs" id="nav-tab" role="tablist">
+			<!-- 첫 번째 탭 메뉴 버튼 -->
+			<button class="nav-link active" id="nav-home-tab"
+				data-bs-toggle="tab" data-bs-target="#nav-home" type="button"
+				role="tab" aria-controls="nav-home" aria-selected="true">기본등록사항</button>
+			<!-- 두 번째 탭 메뉴 버튼 -->
+			<button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab"
+				data-bs-target="#nav-profile" type="button" role="tab"
+				aria-controls="nav-profile" aria-selected="false">추가등록사항</button>
+			<!-- 세 번째 탭 메뉴 버튼 -->
+			<button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab"
+				data-bs-target="#nav-contact" type="button" role="tab"
+				aria-controls="nav-contact" aria-selected="false">전자세금계산서</button>
+		</div>
+		
+		
+       <a href="#" id="excelBtn" style="float: right;">엑셀 다운로드</a>
+	</nav>
+	<form id="uploadCompany" name="uploadCompany"
+		th:action="@{/company/uploader}" method="post"
+		class="needs-validation" th:object="${compan}" >
+
+		<div class="tab-content" id="nav-tabContent">
+			<!-- 첫번째 탭 -->
+			<div class="tab-pane fade show active" id="nav-home" role="tabpanel"
+				aria-labelledby="nav-home-tab">
+				<div style="display: block; margin: 5px;">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">회계년도</label>
+						</div>
+						<div class="col-10">
+							<input type="text" style="width: 30px;" disabled placeholder="4">
+							기 <input type="text" style="width: 50px;" disabled
+								placeholder="2013"> 년 <input type="text"
+								style="width: 30px;" disabled placeholder="01"> 월 <input
+								type="text" style="width: 30px;" disabled placeholder="01">
+							일 ~ <input type="text" style="width: 50px;" disabled
+								placeholder="2013"> 년 <input type="text"
+								style="width: 30px;" disabled placeholder="12"> 월 <input
+								type="text" style="width: 30px;" disabled placeholder="31">
+							일
+						</div>
+					</div>
+				</div>
+
+
+				<div style="display: block">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">사업자등록번호</label>
+						</div>
+						<div class="col-3">
+							<input type="text" placeholder="" id="businessNum" th:field="*{businessNum}" 
+								name="businessNum" >
+						</div>
+						<div class="col-2">
+							<label class="f-sub">법인등록번호</label>
+						</div>
+						<div class="col-3">
+							<input type="text" style="width: 140px;"
+								placeholder="222222-222222" id="corporationNum" th:field="*{corporationNum}" 
+								name="corporationNum" >
+						</div>
+					</div>
+				</div>
+
+				<div style="display: block">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">대표자명</label>
+						</div>
+						<div class="col-2">
+							<input type="text" id="businessName" name="businessName" th:field="*{businessName}" >
+						</div>
+
+						<div class="col-4">
+							<label>대표자주민번호</label> 
+							<input type="text"	style="width: 100px; margin-left: 10px; margin-right: 10px;"
+								id="rpn1" name="rpn1" th:field="*{rpn1}"> - <input type="password"
+								style="width: 100px; margin-left: 10px;" id="rpn2" name="rpn2"
+								th:field="*{rpn2}">
+						</div>
+						<div class="col-4">
+							<label>대표자외국인여부</label> <input type="text" style="width: 20px;"
+								id="businessNationYN" name="businessNationYN"> <input
+								type="text" disabled th:field="*{businessNationYN}" >
+						</div>
+					</div>
+				</div>
+
+
+				<div style="display: block">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">사업장주소</label>
+						</div>
+						<div class="col-10">
+							<input type="text" id="postcode1" name="postcode1"
+								placeholder="우편번호" th:field="*{postcode1}" > <input type="button"
+								onclick="execDaumPostcode1()" value="우편번호 찾기"
+								class="btn btn-outline-secondary"  ><br> <input
+								type="text" id="address1" name="address1" th:field="*{address1}"  placeholder="주소">
+							<input type="text" id="detailAddress1" name="detailAddress1"
+								placeholder="상세주소" th:field="*{detailAddress1}" >
+						</div>
+					</div>
+				</div>
+
+
+				<div style="display: block">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">본점주소</label>
+						</div>
+						<div class="col-10">
+							<input type="text" id="postcode2" name="postcode2" th:field="*{postcode2}" 
+								placeholder="우편번호"> <input type="button"
+								onclick="execDaumPostcode2()" value="우편번호 찾기"
+								class="btn btn-outline-secondary"><br> <input
+								type="text" id="address2" name="address2" placeholder="주소" th:field="*{address2}" > 
+							<input type="text" id="detailAddress2" name="detailAddress2" th:field="*{detailAddress2}" 
+								placeholder="상세주소">
+						</div>
+					</div>
+				</div>
+
+
+				<div style="display: block">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">업태</label>
+						</div>
+						<div class="col-3">
+							<input type="text" id="businessSubject" name="businessSubject" th:field="*{businessSubject}" >
+						</div>
+						<div class="col-2">
+							<label class="f-sub">종목</label>
+						</div>
+						<div class="col-3">
+							<input type="text" id="businessItem" name="businessItem" th:field="*{businessItem}" >
+						</div>
+					</div>
+				</div>
+
+
+
+				<div style="display: block">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">사업장전화번호</label>
+						</div>
+						<div class="col-3">
+							<input type="text" style="width: 60px;" id="businessPhoneNum1" th:field="*{businessPhoneNum1}" 
+								name="businessPhoneNum1"> - <input type="text"
+								style="width: 60px;" id="businessPhoneNum2" th:field="*{businessPhoneNum2}" 
+								name="businessPhoneNum2"> - <input type="text"
+								style="width: 60px;" id="businessPhoneNum3" th:field="*{businessPhoneNum3}" 
+								name="businessPhoneNum3">
+						</div>
+						<div class="col-2">
+							<label class="f-sub">팩스번호</label>
+						</div>
+						<div class="col-3">
+							<input type="text" style="width: 60px;" id="paxNumber1" th:field="*{paxNumber1}" 
+								name="paxNumber1"> - <input type="text"
+								style="width: 60px;" id="paxNumber2" name="paxNumber2" th:field="*{paxNumber2}" >
+							- <input type="text" style="width: 60px;" id="paxNumber3" th:field="*{paxNumber3}" 
+								name="paxNumber3">
+						</div>
+					</div>
+				</div>
+
+
+				<div style="display: block">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">법인구분</label>
+						</div>
+						<div class="col-3">
+							<input type="text" style="width: 30px;" id="corporationYN" th:field="*{corporationYN}" 
+								name="corporationYN"> <input type="text" disabled>
+						</div>
+						<div class="col-2">
+							<label class="f-sub">법인종류구분</label>
+						</div>
+						<div class="col-3">
+							<input type="text" style="width: 30px;" id="corporationItem" th:field="*{corporationItem}" 
+								name="corporationItem"> <input type="text" disabled>
+						</div>
+					</div>
+				</div>
+
+
+				<div style="display: block">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">중소기업여부</label>
+						</div>
+						<div class="col-3">
+							<input type="text" style="width: 30px;" id="smallBusinessYN" th:field="*{smallBusinessYN}" 
+								name="smallBusinessYN"> <input type="text" disabled>
+						</div>
+					</div>
+				</div>
+
+
+				<div style="display: block">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">설립년월일</label>
+						</div>
+						<div class="col-3">
+							<input type="text" id="establishedYear1" name="establishedYear" th:field="*{establishedYear}" 
+								placeholder="2022-09-20" style="width: 250px;" />
+						</div>
+						<div class="col-2">
+							<label class="f-sub">개입년월일</label>
+						</div>
+						<div class="col-3">
+							<input type="text" id="interventionYear1" name="interventionYear" th:field="*{interventionYear}" 
+								placeholder="2022-09-21" style="width: 250px;" />
+						</div>
+					</div>
+				</div>
+
+				<div style="display: block">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">사업장관할세무서</label>
+						</div>
+						<div class="col-3">
+							<input type="text" style="width: 50px;"> <input
+								type="text" disabled>
+						</div>
+						<div class="col-2">
+							<label class="f-sub">본점관할세무서</label>
+						</div>
+						<div class="col-3">
+							<input type="text" style="width: 50px;"> <input
+								type="text" disabled>
+						</div>
+					</div>
+				</div>
+
+				<div style="display: block">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">주업종코드</label>
+						</div>
+						<div class="col-8">
+							<input type="text" style="width: 50px;"> <input
+								type="text" disabled style="width: 90%;">
+						</div>
+						<div class="col-2">
+							<label>비밀번호</label> <input type="password" style="width: 110px;"
+								id="corporationPassword" name="corporationPassword"  >
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+			<!-- 두번째 탭 -->
+			<div class="tab-pane fade" id="nav-profile" role="tabpanel"
+				aria-labelledby="nav-profile-tab">
+				
+
+
+				<div style="display: block; margin-top: 10px; margin-left:10px;">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">영문회사명</label>
+						</div>
+						<div class="col-3">
+							<input type="text" placeholder="" id="businessEngName" 
+								name="businessEngName" >
+						</div>
+						<div class="col-2" style="margin-right: 38px;">
+							<label class="f-sub">계좌번호</label>
+						</div>
+						<div class="col-3">
+							<input type="text" style="width: 140px;"
+							 id="accountNum" 
+								name="accountNum" >
+						</div>
+					</div>
+				</div>
+
+				<div style="display: block" >
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">신고담당자</label>
+						</div>
+						<div class="col-3">
+							<input type="text" id="reporterName" name="reporterName"  >
+						</div>
+
+						<div class="col-2" style="margin-left: -26px;">
+							<label class="f-sub">신고자이메일</label> 
+						</div>
+						<div class="col-4">
+							<input type="text"	style="width: 100px; margin-left: 10px; margin-right: 10px;"
+								id="reporterAccount1" name="reporterAccount1" > @ <input type="email"
+								style=" margin-left: 10px;" id="reporterAccount2" name="reporterAccount2">
+						</div>
+					</div>
+				</div>
+
+
+
+				<div style="display: block">
+					<div class="row">
+						<div class="col-2">
+							<label class="f-sub">영문신고자명</label>
+						</div>
+						<div class="col-3">
+							<input type="text" id="reporterEngName" name="reporterEngName"  >
+						</div>
+					</div>
+				</div>
+
+				</div>
+			<!-- 세번째 탭 -->
+			<div class="tab-pane fade" id="nav-contact" role="tabpanel"
+				aria-labelledby="nav-contact-tab"></div>
+			<br> <input type="submit" class="btn btn-outline-primary"
+				style="float: right;" value="등록">
+		</div>
+	</form>
+
+
+	<script
+		src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+	<script>
+		
+	</script>
+
+	<!-- 달력 API -->
+	<script type="text/javascript">
+		var dateSelector = document.querySelector('.dateSelector');
+		dateSelector.flatpickr({
+			mode : "range",
+			minDate : "today",
+			dateFormat : "Y-m-d",
+		});
+		var dateSelector = document.querySelector('.dateSelector2');
+		dateSelector.flatpickr({
+			mode : "range",
+			minDate : "today",
+			dateFormat : "Y-m-d",
+		});
+	</script>
+
+
+
+	<!-- 국내 주소 찾기 -->
+	<script>
+		function execDaumPostcode1() {
+			new daum.Postcode(
+					{
+						oncomplete : function(data) {
+							// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+							// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+							// 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+							var addr = ''; // 주소 변수
+							var extraAddr = ''; // 참고항목 변수
+
+							//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+							if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+								addr = data.roadAddress;
+							} else { // 사용자가 지번 주소를 선택했을 경우(J)
+								addr = data.jibunAddress;
+							}
+
+							// 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+							if (data.userSelectedType === 'R') {
+								// 법정동명이 있을 경우 추가한다. (법정리는 제외)
+								// 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+								if (data.bname !== ''
+										&& /[동|로|가]$/g.test(data.bname)) {
+									extraAddr += data.bname;
+								}
+								// 건물명이 있고, 공동주택일 경우 추가한다.
+								if (data.buildingName !== ''
+										&& data.apartment === 'Y') {
+									extraAddr += (extraAddr !== '' ? ', '
+											+ data.buildingName
+											: data.buildingName);
+								}
+
+							}
+
+							// 우편번호와 주소 정보를 해당 필드에 넣는다.
+							document.getElementById('postcode1').value = data.zonecode;
+							document.getElementById("address1").value = addr;
+							// 커서를 상세주소 필드로 이동한다.
+						}
+					}).open();
+		}
+		function execDaumPostcode2() {
+			new daum.Postcode(
+					{
+						oncomplete : function(data) {
+							// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+							// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+							// 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+							var addr = ''; // 주소 변수
+							var extraAddr = ''; // 참고항목 변수
+
+							//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+							if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+								addr = data.roadAddress;
+							} else { // 사용자가 지번 주소를 선택했을 경우(J)
+								addr = data.jibunAddress;
+							}
+
+							// 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+							if (data.userSelectedType === 'R') {
+								// 법정동명이 있을 경우 추가한다. (법정리는 제외)
+								// 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+								if (data.bname !== ''
+										&& /[동|로|가]$/g.test(data.bname)) {
+									extraAddr += data.bname;
+								}
+								// 건물명이 있고, 공동주택일 경우 추가한다.
+								if (data.buildingName !== ''
+										&& data.apartment === 'Y') {
+									extraAddr += (extraAddr !== '' ? ', '
+											+ data.buildingName
+											: data.buildingName);
+								}
+
+							}
+
+							// 우편번호와 주소 정보를 해당 필드에 넣는다.
+							document.getElementById('postcode2').value = data.zonecode;
+							document.getElementById("address2").value = addr;
+							// 커서를 상세주소 필드로 이동한다.
+						}
+					}).open();
+		}
+	</script>
+
+	<!-- 테이블 js -->
+	<script>
+		window.onload = function() {
+			console.log("");
+			console.log("[window onload] : [start]");
+			console.log("");
+		};
+	</script>
+	
+	   <script type="text/javascript">
+        //하트 버튼 클릭 시
+        $('#excelBtn').on('click', function (e) {
+        	var bId = document.getElementById("businessNum").value;
+                $.ajax({
+                    url: "/excel/download",
+                    type: "get",
+                    data: {
+                        id: bId,
+                    },
+                    success:function(data) {
+
+                            window.location.href = '/excel/download?id='+bId;
+
+            		},
+                })
+        });
+    </script>
+</div>
+
+</html>
