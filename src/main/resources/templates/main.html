@@ -4,10 +4,13 @@
 	layout:decorate="~{layouts/layout1}">
 
 <div layout:fragment="content">
+<div class="row">
+    <input type="text" id="mykeyword"  class="color-input" placeholder="검색어를 입력하세요">
+    </div>
 	<div style="overflow-y: scroll; height:280px;">
 
 		<!-- Header Table -->
-		<table>
+		<table id='myTable'>
 
 			<thead>
 				<tr>
@@ -19,7 +22,7 @@
 				</tr>
 			</thead>
 
-			<tbody>
+			 <tbody id="myTable_tbody">
 				<!-- tr th:each : 행 반복문을 수행하겠다는 의미입니다 [여러 데이터 출력] -->
 				<tr th:each="list : ${tableList}">
 					<td><span th:text="${list.businessNum}"></span></td>
@@ -514,6 +517,16 @@
                 })
         });
     </script>
+<script>
+$(document).ready(function() {
+    $("#mykeyword").keyup(function() {
+        var value = $(this).val().toLowerCase();
+        $("#myTable_tbody tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+</script>
 </div>
 
 </html>

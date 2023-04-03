@@ -85,4 +85,16 @@ tr:nth-child(even) {
 
 
 
+.color-input {
+  font-weight: 600;
+  text-transform: uppercase;
+  border: none;
+  border-bottom: 2px solid #000;
+  padding: 10px;
+  font-size: 1rem;
+  background-color: transparent;
+  margin-bottom : 20px;
+  float:right;
+  width:250px;
+}
 
