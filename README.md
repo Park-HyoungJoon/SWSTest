@@ -11,4 +11,6 @@ SpringBoot, Mysql, thymeleaf를 사용하여 제작하였다.
 
 # 결과 화면
 
-![image](https://github.com/Park-HyoungJoon/SWSTest/assets/83392856/60b8e27d-9699-4d16-ac88-d1d0ae1c9933)
+
+![image](https://github.com/Park-HyoungJoon/SWSTest/assets/83392856/1c3a3ce0-8e57-4527-bc21-a2226117daab)
+
